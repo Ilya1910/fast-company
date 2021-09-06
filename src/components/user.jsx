@@ -1,36 +1,39 @@
 import React, { useContext } from "react";
 import Context from "../context";
+import Qualitie from "./qualitie";
+import BookMark from "./bookmark";
 
-function addClasses(badgeClassName) {
-    return `badge bg-${badgeClassName}`;
+export function classesBadge(badgeClassName) {
+    return `badge badge-margin bg-${badgeClassName}`;
 }
 
-export default function User({ user }) {
+export default function User({
+    name,
+    qualities,
+    profession,
+    completedMeetings,
+    rate,
+    _id,
+    handleStatus,
+    status,
+}) {
     const { handleDelete } = useContext(Context);
-
     return (
         <tr>
-            <td>{user.name}</td>
+            <td>{name}</td>
+            <td>{qualities.map(Qualitie)}</td>
+            <td>{profession.name}</td>
+            <td>{completedMeetings}</td>
+            <td>{rate}/5</td>
             <td>
-                {user.qualities.map((qualitie, index) => {
-                    return (
-                        <span
-                            key={index}
-                            className={addClasses(qualitie.color)}
-                        >
-                            {qualitie.name}
-                        </span>
-                    );
-                })}
+                <button onClick={() => handleStatus(_id)}>
+                    <BookMark status={status} />
+                </button>
             </td>
-            <td>{user.profession.name}</td>
-            <td>{user.completedMeetings}</td>
-            <td>{user.rate}/5</td>
             <td>
                 <button
-                    className="badge bg-danger"
-                    style={{ border: "none" }}
-                    onClick={() => handleDelete(user._id)}
+                    className={classesBadge("danger")}
+                    onClick={() => handleDelete(_id)}
                 >
                     delete
                 </button>
