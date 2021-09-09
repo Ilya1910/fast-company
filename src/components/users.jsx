@@ -3,9 +3,19 @@ import API from "../api";
 import User from "./user";
 import Context from "../context";
 import renderPhrase from "./searchStatus";
+import Pagination from "./pagination";
+import { paginate } from "../utils/paginate";
 
 const Users = () => {
     const [users, setUsers] = useState(API.users.fetchAll());
+    const [currentPage, setCurrentPage] = useState(1);
+    const count = users.length;
+    const pageSize = 4;
+    const userCrop = paginate(users, currentPage, pageSize);
+
+    const handlePageChange = (pageIndex) => {
+        setCurrentPage(pageIndex);
+    };
 
     const handleDelete = (userId) => {
         setUsers(users.filter((user) => user._id !== userId));
@@ -21,12 +31,12 @@ const Users = () => {
         );
     };
 
-    if (users.length === 0) {
-        return <>{renderPhrase(users.length)}</>;
+    if (count === 0) {
+        return <>{renderPhrase(count)}</>;
     } else {
         return (
             <Context.Provider value={{ handleDelete }}>
-                <h2>{renderPhrase(users.length)}</h2>
+                <h2>{renderPhrase(count)}</h2>
                 <table className="table">
                     <thead>
                         <tr>
@@ -40,7 +50,7 @@ const Users = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user) => {
+                        {userCrop.map((user) => {
                             return (
                                 <User
                                     {...user}
@@ -51,6 +61,12 @@ const Users = () => {
                         })}
                     </tbody>
                 </table>
+                <Pagination
+                    itemsCount={count}
+                    pageSize={pageSize}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                />
             </Context.Provider>
         );
     }
