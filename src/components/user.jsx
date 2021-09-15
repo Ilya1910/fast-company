@@ -10,13 +10,13 @@ export function classesBadge(badgeClassName) {
 
 User.propTypes = {
     name: PropTypes.string.isRequired,
-    qualities: PropTypes.string.isRequired,
-    profession: PropTypes.string.isRequired,
+    qualities: PropTypes.array.isRequired,
+    profession: PropTypes.object.isRequired,
     completedMeetings: PropTypes.number.isRequired,
     rate: PropTypes.number.isRequired,
     _id: PropTypes.string.isRequired,
-    handleStatus: PropTypes.bool.isRequired,
-    status: PropTypes.bool.isRequired
+    handleStatus: PropTypes.func.isRequired,
+    status: PropTypes.bool
 };
 
 export default function User({

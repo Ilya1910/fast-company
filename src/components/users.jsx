@@ -1,75 +1,107 @@
-import React, { useState } from "react";
-import API from "../api";
+import React, { useState, useEffect } from "react";
 import User from "./user";
-import Context from "../context";
 import renderPhrase from "./searchStatus";
 import Pagination from "./pagination";
 import { paginate } from "../utils/paginate";
+import PropTypes from "prop-types";
+import GroupList from "./groupList";
+import API from "../api";
+import _ from "lodash";
 
-const Users = () => {
-    const [users, setUsers] = useState(API.users.fetchAll());
+const Users = ({ users: allUsers, ...rest }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const count = users.length;
+    const [professions, setProfession] = useState();
+    const [selectedProf, setSelectedProf] = useState();
     const pageSize = 4;
-    const userCrop = paginate(users, currentPage, pageSize);
+
+    useEffect(() => {
+        API.professions.fetchAll().then((data) => setProfession(data));
+    }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedProf]);
+
+    const handleProfessionSelect = (item) => {
+        setSelectedProf(item);
+    };
 
     const handlePageChange = (pageIndex) => {
         setCurrentPage(pageIndex);
     };
 
-    const handleDelete = (userId) => {
-        setUsers(users.filter((user) => user._id !== userId));
-    };
+    const filteredUsers = selectedProf
+        ? allUsers.filter((user) => _.isEqual(user.profession, selectedProf))
+        : allUsers;
+    const count = filteredUsers.length;
+    const usersCrop = paginate(filteredUsers, currentPage, pageSize);
 
-    const handleStatus = (userId) => {
-        setUsers(
-            users.map((user) =>
-                user._id === userId
-                    ? { ...user, status: !user.status }
-                    : { ...user }
-            )
-        );
+    const clearFilter = () => {
+        setSelectedProf();
     };
 
     if (count === 0) {
-        return <>{renderPhrase(count)}</>;
+        return <h2>{renderPhrase(count)}</h2>;
     } else {
         return (
-            <Context.Provider value={{ handleDelete }}>
-                <h2>{renderPhrase(count)}</h2>
-                <table className="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Имя</th>
-                            <th scope="col">Качества</th>
-                            <th scope="col">Профессия</th>
-                            <th scope="col">Встретился, раз</th>
-                            <th scope="col">Оценка</th>
-                            <th scope="col">Избранное</th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {userCrop.map((user) => {
-                            return (
-                                <User
-                                    {...user}
-                                    key={user._id}
-                                    handleStatus={handleStatus}
-                                />
-                            );
-                        })}
-                    </tbody>
-                </table>
-                <Pagination
-                    itemsCount={count}
-                    pageSize={pageSize}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                />
-            </Context.Provider>
+            <div className="d-flex">
+                {professions && (
+                    <div className="d-flex flex-column flex-shrink-0 p-2">
+                        <GroupList
+                            items={professions}
+                            selectedItem={selectedProf}
+                            onItemSelect={handleProfessionSelect}
+                        />
+                        <button
+                            className="btn btn-secondary mt-2"
+                            onClick={clearFilter}
+                        >
+                            Очистить
+                        </button>
+                    </div>
+                )}
+                <div className="d-flex flex-column">
+                    <h2>{renderPhrase(count)}</h2>
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Имя</th>
+                                <th scope="col">Качества</th>
+                                <th scope="col">Профессия</th>
+                                <th scope="col">Встретился, раз</th>
+                                <th scope="col">Оценка</th>
+                                <th scope="col">Избранное</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {usersCrop.map((user) => {
+                                return (
+                                    <User {...rest} {...user} key={user._id} />
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                    <div className="d-flex justify-content-center">
+                        <Pagination
+                            itemsCount={count}
+                            pageSize={pageSize}
+                            currentPage={currentPage}
+                            onPageChange={handlePageChange}
+                        />
+                    </div>
+                </div>
+            </div>
         );
     }
+};
+
+Users.defaultProps = {
+    count: 0
+};
+
+Users.propTypes = {
+    users: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
 };
 
 export default Users;
