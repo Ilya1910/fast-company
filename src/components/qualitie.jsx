@@ -1,5 +1,5 @@
 import React from "react";
-import { classesBadge } from "./user";
+import { classesBadge } from "./searchStatus";
 import PropTypes from "prop-types";
 
 const Qualitie = ({ color, name, _id }) => (

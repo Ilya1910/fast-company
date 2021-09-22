@@ -1,5 +1,8 @@
 import React from "react";
-import { classesBadge } from "./user";
+
+export function classesBadge(badgeClassName) {
+    return `badge badge-margin bg-${badgeClassName}`;
+}
 
 const renderPhrase = (length) => {
     return (
