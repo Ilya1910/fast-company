@@ -1,17 +1,34 @@
 import React from "react";
+import PropTypes from "prop-types";
+import { plural } from "../utils/plural";
 
 export function classesBadge(badgeClassName) {
     return `badge badge-margin bg-${badgeClassName}`;
 }
 
-const renderPhrase = (length) => {
+const SearchStatus = ({ length }) => {
+    const renderPhrase = (number) =>
+        plural(
+            "человек тусанет",
+            "человека тусанут",
+            "человек тусанет",
+            number
+        );
+
     return (
-        <span className={classesBadge(length !== 0 ? "primary" : "danger")}>
-            {length !== 0
-                ? `${length} человек тусанет с тобой сегодня`
-                : "Никто с тобой не тусанет"}
-        </span>
+        <h2>
+            <span
+                className={"badge " + (length > 0 ? "bg-primary" : "bg-danger")}
+            >
+                {length > 0
+                    ? `${length + " " + renderPhrase(length)}   с тобой сегодня`
+                    : "Никто с тобой не тусанет"}
+            </span>
+        </h2>
     );
 };
+SearchStatus.propTypes = {
+    length: PropTypes.number
+};
 
-export default renderPhrase;
+export default SearchStatus;
