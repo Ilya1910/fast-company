@@ -8,7 +8,7 @@ import _ from "lodash";
 import UserTable from "../../ui/usersTable";
 import API from "../../../../API";
 import Loading from "../../common/loading";
-import useUser from "../../../hooks/useUsers";
+import { useUser } from "../../../hooks/useUsers";
 
 const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -68,18 +68,6 @@ const UsersListPage = () => {
                 return user;
             }
         });
-
-        // const searchUsers = users.filter((user) => {
-        //     if (user.name.toLowerCase().includes(search.toLowerCase())) {
-        //         return user;
-        //     }
-        // });
-
-        // const searchUsers = search
-        //     ? users.filter((user) =>
-        //           user.name.toLowerCase().includes(search.toLowerCase())
-        //       )
-        //     : users;
 
         const filteredUsers = selectedProf
             ? users.filter((user) => _.isEqual(user.profession, selectedProf))
