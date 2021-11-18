@@ -8,6 +8,7 @@ import _ from "lodash";
 import UserTable from "../../ui/usersTable";
 import API from "../../../../API";
 import Loading from "../../common/loading";
+import useUser from "../../../hooks/useUsers";
 
 const UsersListPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -15,25 +16,24 @@ const UsersListPage = () => {
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ iter: "name", order: "asc" });
     const pageSize = 4;
-    const [users, setUsers] = useState();
     const [search, setSearch] = useState("");
+    const { users } = useUser();
 
-    useEffect(() => {
-        API.users.fetchAll().then((data) => setUsers(data));
-    }, []);
+    // console.log(users);
 
     const handleDelete = (userId) => {
-        setUsers(users.filter((user) => user._id !== userId));
+        // setUsers(users.filter((user) => user._id !== userId));
+        console.log(userId);
     };
     const handleToggleBookMark = (id) => {
-        setUsers(
-            users.map((user) => {
-                if (user._id === id) {
-                    return { ...user, bookmark: !user.bookmark };
-                }
-                return user;
-            })
-        );
+        const newArray = users.map((user) => {
+            if (user._id === id) {
+                return { ...user, bookmark: !user.bookmark };
+            }
+            return user;
+        });
+        // setUsers(newArray);
+        console.log(newArray);
     };
 
     useEffect(() => {
@@ -68,6 +68,19 @@ const UsersListPage = () => {
                 return user;
             }
         });
+
+        // const searchUsers = users.filter((user) => {
+        //     if (user.name.toLowerCase().includes(search.toLowerCase())) {
+        //         return user;
+        //     }
+        // });
+
+        // const searchUsers = search
+        //     ? users.filter((user) =>
+        //           user.name.toLowerCase().includes(search.toLowerCase())
+        //       )
+        //     : users;
+
         const filteredUsers = selectedProf
             ? users.filter((user) => _.isEqual(user.profession, selectedProf))
             : searchUsers;
