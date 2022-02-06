@@ -6,7 +6,7 @@ const BackHistoryButton = () => {
 
     return (
         <button className="btn btn-primary" onClick={() => history.goBack()}>
-            <i className="bi bi-caret-left"/>
+            <i className="bi bi-caret-left"></i>
             Назад
         </button>
     );

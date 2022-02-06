@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-const TextField = ({
-    label,
-    type,
-    name,
-    value,
-    onChange,
-    error,
-    placeholder
-}) => {
+
+const TextField = ({ label, type, name, value, onChange, error }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = ({ target }) => {
@@ -18,12 +11,14 @@ const TextField = ({
     const getInputClasses = () => {
         return "form-control" + (error ? " is-invalid" : "");
     };
+
     const toggleShowPassword = () => {
         setShowPassword((prevState) => !prevState);
     };
+
     return (
         <div className="mb-4">
-            <label htmlFor={name}>{label}</label>
+            <label htmlFor={name}> {label}</label>
             <div className="input-group has-validation">
                 <input
                     type={showPassword ? "text" : type}
@@ -32,8 +27,8 @@ const TextField = ({
                     value={value}
                     onChange={handleChange}
                     className={getInputClasses()}
-                    placeholder={placeholder}
                 />
+
                 {type === "password" && (
                     <button
                         className="btn btn-outline-secondary"
@@ -44,10 +39,10 @@ const TextField = ({
                             className={
                                 "bi bi-eye" + (showPassword ? "-slash" : "")
                             }
-                        />
+                        ></i>
                     </button>
                 )}
-                {error && <div className="invalid-feedback">{error}</div>}
+                {error && <div className="invalid-feedback ">{error}</div>}
             </div>
         </div>
     );
@@ -63,8 +58,7 @@ TextField.propTypes = {
     name: PropTypes.string,
     value: PropTypes.string,
     error: PropTypes.string,
-    onChange: PropTypes.func,
-    placeholder: PropTypes.string
+    onChange: PropTypes.func
 };
 
 export default TextField;

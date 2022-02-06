@@ -8,40 +8,40 @@ const GroupList = ({
     onItemSelect,
     selectedItem
 }) => {
-    const itemsIsObj = () => {
-        return Object.keys(items).map((item) => (
-            <li
-                key={items[item][valueProperty]}
-                className={
-                    "list-group-item" +
-                    (items[item] === selectedItem ? " active" : "")
-                }
-                onClick={() => onItemSelect(items[item])}
-                role="button"
-            >
-                {items[item][contentProperty]}
-            </li>
-        ));
-    };
-
-    const itemIsArr = (items) => {
-        return items.map((item) => (
-            <li
-                key={item[valueProperty]}
-                className={
-                    "list-group-item" + (item === selectedItem ? " active" : "")
-                }
-                onClick={() => onItemSelect(item)}
-                role="button"
-            >
-                {item[contentProperty]}
-            </li>
-        ));
-    };
-
+    if (!Array.isArray(items)) {
+        return (
+            <ul className="list-group">
+                {Object.keys(items).map((item) => (
+                    <li
+                        key={items[item][valueProperty]}
+                        className={
+                            "list-group-item" +
+                            (items[item] === selectedItem ? " active" : "")
+                        }
+                        onClick={() => onItemSelect(items[item])}
+                        role="button"
+                    >
+                        {items[item][contentProperty]}
+                    </li>
+                ))}
+            </ul>
+        );
+    }
     return (
         <ul className="list-group">
-            {typeof items === "object" ? itemsIsObj(items) : itemIsArr(items)}
+            {items.map((item) => (
+                <li
+                    key={item[valueProperty]}
+                    className={
+                        "list-group-item" +
+                        (item === selectedItem ? " active" : "")
+                    }
+                    onClick={() => onItemSelect(item)}
+                    role="button"
+                >
+                    {item[contentProperty]}
+                </li>
+            ))}
         </ul>
     );
 };

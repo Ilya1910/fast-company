@@ -4,15 +4,17 @@ import { paginate } from "../../../utils/paginate";
 import Pagination from "../../common/pagination";
 import GroupList from "../../common/groupList";
 import SearchStatus from "../../ui/searchStatus";
-import _ from "lodash";
 import UserTable from "../../ui/usersTable";
-import API from "../../../../API";
+import _ from "lodash";
 import { useUser } from "../../../hooks/useUsers";
+import { useProfessions } from "../../../hooks/useProfession";
+import { useAuth } from "../../../hooks/useAuth";
 
 const UsersListPage = () => {
     const { users } = useUser();
+    const { currentUser } = useAuth();
+    const { isLoading: professionsLoading, professions } = useProfessions();
     const [currentPage, setCurrentPage] = useState(1);
-    const [professions, setProfession] = useState();
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedProf, setSelectedProf] = useState();
     const [sortBy, setSortBy] = useState({ path: "name", order: "asc" });
@@ -22,7 +24,6 @@ const UsersListPage = () => {
         console.log("delete user");
         // setUsers(users.filter((user) => user._id !== userId));
     };
-
     const handleToggleBookMark = (id) => {
         const newArray = users.map((user) => {
             if (user._id === id) {
@@ -35,10 +36,6 @@ const UsersListPage = () => {
     };
 
     useEffect(() => {
-        API.professions.fetchAll().then((data) => setProfession(data));
-    }, []);
-
-    useEffect(() => {
         setCurrentPage(1);
     }, [selectedProf, searchQuery]);
 
@@ -46,7 +43,6 @@ const UsersListPage = () => {
         if (searchQuery !== "") setSearchQuery("");
         setSelectedProf(item);
     };
-
     const handleSearchQuery = ({ target }) => {
         setSelectedProf(undefined);
         setSearchQuery(target.value);
@@ -55,36 +51,40 @@ const UsersListPage = () => {
     const handlePageChange = (pageIndex) => {
         setCurrentPage(pageIndex);
     };
-
     const handleSort = (item) => {
         setSortBy(item);
     };
 
-    const filteredUsers = searchQuery
-        ? users.filter(
-              (user) =>
-                  user.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !==
-                  -1
-          )
-        : selectedProf
-        ? users.filter(
-              (user) =>
-                  JSON.stringify(user.profession) ===
-                  JSON.stringify(selectedProf)
-          )
-        : users;
+    function filterUsers(data) {
+        const filteredUsers = searchQuery
+            ? data.filter(
+                  (user) =>
+                      user.name
+                          .toLowerCase()
+                          .indexOf(searchQuery.toLowerCase()) !== -1
+              )
+            : selectedProf
+            ? data.filter(
+                  (user) =>
+                      JSON.stringify(user.profession) ===
+                      JSON.stringify(selectedProf)
+              )
+            : data;
 
+        return filteredUsers.filter((u) => u._id !== currentUser._id);
+    }
+
+    const filteredUsers = filterUsers(users);
     const count = filteredUsers.length;
     const sortedUsers = _.orderBy(filteredUsers, [sortBy.path], [sortBy.order]);
     const usersCrop = paginate(sortedUsers, currentPage, pageSize);
-
     const clearFilter = () => {
         setSelectedProf();
     };
 
     return (
         <div className="d-flex">
-            {professions && (
+            {professions && professionsLoading && (
                 <div className="d-flex flex-column flex-shrink-0 p-3">
                     <GroupList
                         selectedItem={selectedProf}
@@ -95,7 +95,7 @@ const UsersListPage = () => {
                         className="btn btn-secondary mt-2"
                         onClick={clearFilter}
                     >
-                        Очиститть
+                        Очистить
                     </button>
                 </div>
             )}
@@ -129,7 +129,6 @@ const UsersListPage = () => {
         </div>
     );
 };
-
 UsersListPage.propTypes = {
     users: PropTypes.array
 };

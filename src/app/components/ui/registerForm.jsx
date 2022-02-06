@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { validator } from "../../utils/validator";
+import { validator } from "../../utils/ validator";
 import TextField from "../common/form/textField";
 import SelectField from "../common/form/selectField";
-import RadioField from "../common/form/radioField";
+import RadioField from "../common/form/radio.Field";
 import MultiSelectField from "../common/form/multiSelectField";
 import CheckBoxField from "../common/form/checkBoxField";
 import { useQualities } from "../../hooks/useQualities";
@@ -17,20 +17,21 @@ const RegisterForm = () => {
         password: "",
         profession: "",
         sex: "male",
+        name: "",
         qualities: [],
         licence: false
     });
     const { signUp } = useAuth();
     const [errors, setErrors] = useState({});
     const { qualities } = useQualities();
+
     const qualitiesList = qualities.map((q) => ({
         label: q.name,
         value: q._id
     }));
-    const { profession } = useProfessions();
-
-    const professionList = profession.map((p) => ({
-        name: p.name,
+    const { professions } = useProfessions();
+    const professionsList = professions.map((p) => ({
+        label: p.name,
         value: p._id
     }));
 
@@ -41,13 +42,22 @@ const RegisterForm = () => {
         }));
     };
 
-    const validatorConfig = {
+    const validatorConfog = {
         email: {
             isRequired: {
                 message: "Электронная почта обязательна для заполнения"
             },
             isEmail: {
                 message: "Email введен некорректно"
+            }
+        },
+        name: {
+            isRequired: {
+                message: "Имя обязательно для заполнения"
+            },
+            min: {
+                message: "Имя должено состоять минимум из 3 символов",
+                value: 3
             }
         },
         password: {
@@ -73,7 +83,7 @@ const RegisterForm = () => {
         licence: {
             isRequired: {
                 message:
-                    "Вы не можете использовать наш сервис без пожтверждения лицензионного соглашения"
+                    "Вы не можете использовать наш сервис без подтверждения лицензионного соглашения"
             }
         }
     };
@@ -83,15 +93,15 @@ const RegisterForm = () => {
     }, [data]);
 
     const validate = () => {
-        const errors = validator(data, validatorConfig);
+        const errors = validator(data, validatorConfog);
         setErrors(errors);
         return Object.keys(errors).length === 0;
     };
 
     const isValid = Object.keys(errors).length === 0;
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         const isValid = validate();
         if (!isValid) return;
         const newData = {
@@ -116,6 +126,13 @@ const RegisterForm = () => {
                 error={errors.email}
             />
             <TextField
+                label="Имя"
+                name="name"
+                value={data.name}
+                onChange={handleChange}
+                error={errors.name}
+            />
+            <TextField
                 label="Пароль"
                 type="password"
                 name="password"
@@ -124,13 +141,13 @@ const RegisterForm = () => {
                 error={errors.password}
             />
             <SelectField
+                label="Выбери свою профессию"
                 defaultOption="Choose..."
-                error={errors.profession}
-                value={data.profession}
-                label="Выберите Вашу профессию"
-                options={professionList}
-                onChange={handleChange}
                 name="profession"
+                options={professionsList}
+                onChange={handleChange}
+                value={data.profession}
+                error={errors.profession}
             />
             <RadioField
                 options={[
@@ -147,7 +164,6 @@ const RegisterForm = () => {
                 onChange={handleChange}
                 options={qualitiesList}
                 name="qualities"
-                defaultValue={data.qualities}
                 label="Выберите Ваши качества"
             />
             <CheckBoxField
@@ -156,7 +172,7 @@ const RegisterForm = () => {
                 name="licence"
                 error={errors.licence}
             >
-                Подтвердить <a href="">лицензионное соглашение</a>
+                Подтвердить <a>лицензионное соглашение</a>
             </CheckBoxField>
             <button
                 type="submit"

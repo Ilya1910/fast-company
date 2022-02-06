@@ -1,45 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { orderBy } from "lodash";
-import API from "../../../API";
-import { useParams } from "react-router-dom";
 import CommentsList, { AddCommentForm } from "../common/comments";
+import { useComments } from "../../hooks/useComments";
 
 const Comments = () => {
-    const { userId } = useParams();
-    const [comments, setComments] = useState();
-    useEffect(() => {
-        API.comments
-            .fetchCommentsForUser(userId)
-            .then((data) => setComments(data));
-    }, []);
-
+    const { createComment, comments, removeComment } = useComments();
     const handleSubmit = (data) => {
-        API.comments
-            .add({ ...data, pageId: userId })
-            .then((data) => setComments([...comments, data]), []);
+        createComment(data);
+        // api.comments
+        //     .add({ ...data, pageId: userId })
+        //     .then((data) => setComments([...comments, data]));
     };
 
     const handleRemoveComment = (id) => {
-        API.comments.remove(id).then((id) => {
-            setComments(comments.filter((c) => c._id !== id));
-        });
+        removeComment(id);
     };
 
     const sortedComments = orderBy(comments, ["created_at"], ["desc"]);
     return (
         <>
             <div className="card mb-2">
-                {""}
-                <div className="card-body">
+                <div className="card-body ">
                     <AddCommentForm onSubmit={handleSubmit} />
                 </div>
             </div>
             {sortedComments.length > 0 && (
                 <div className="card mb-3">
-                    <div className="card-body">
+                    <div className="card-body ">
                         <h2>Comments</h2>
                         <hr />
-
                         <CommentsList
                             comments={sortedComments}
                             onRemove={handleRemoveComment}
