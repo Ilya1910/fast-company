@@ -38,7 +38,7 @@ const TableHeader = ({ onSort, selectedSort, columns }) => {
                         {...{ role: columns[column].path && "button" }}
                         scope="col"
                     >
-                        {columns[column].name}{" "}
+                        {columns[column].name}
                         {rendeSortArrow(selectedSort, columns[column].path)}
                     </th>
                 ))}

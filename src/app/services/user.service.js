@@ -13,7 +13,6 @@ const userService = {
             userEndpoint + payload._id,
             payload
         );
-
         return data;
     },
     getCurrentUser: async () => {
