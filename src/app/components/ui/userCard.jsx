@@ -49,6 +49,7 @@ const UserCard = ({ user }) => {
         </div>
     );
 };
+
 UserCard.propTypes = {
     user: PropTypes.object
 };

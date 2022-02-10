@@ -15,7 +15,7 @@ module.exports = {
     rules: {
         semi: [2, "always"],
         indent: [0, 4],
-        "multiline-ternary": "off",
+        "multiline-ternary": ["off"],
         "space-before-function-paren": [
             "error",
             { anonymous: "always", named: "never" }

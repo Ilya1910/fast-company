@@ -64,6 +64,16 @@ const AuthProvider = ({ children }) => {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
+    async function updateUserData(data) {
+        const { content } = await userService.update(data);
+        setUser(content);
+        try {
+            const { content } = await userService.update(data);
+            setUser(content);
+        } catch (error) {
+            errorCatcher(error);
+        }
+    }
     async function signUp({ email, password, ...rest }) {
         try {
             const { data } = await httpAuth.post(`accounts:signUp`, {
@@ -108,12 +118,10 @@ const AuthProvider = ({ children }) => {
         }
     }
 
-    useEffect(() => {
-        if (error !== null) {
-            toast(error);
-            setError(null);
-        }
-    }, [error]);
+    function errorCatcher(error) {
+        const { message } = error.response.data;
+        setError(message);
+    }
 
     async function getUserData() {
         try {
@@ -126,16 +134,6 @@ const AuthProvider = ({ children }) => {
         }
     }
 
-    async function update(data) {
-        try {
-            const { content } = await userService.update(data);
-            console.log(content);
-            setUser(content);
-        } catch (error) {
-            errorCatcher(error);
-        }
-    }
-
     useEffect(() => {
         if (localStorageService.getAccessToken()) {
             getUserData();
@@ -144,14 +142,15 @@ const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    function errorCatcher(error) {
-        const { message } = error.response.data;
-        setError(message);
-    }
-
+    useEffect(() => {
+        if (error !== null) {
+            toast(error);
+            setError(null);
+        }
+    }, [error]);
     return (
         <AuthContext.Provider
-            value={{ signUp, logIn, currentUser, logOut, update }}
+            value={{ signUp, logIn, currentUser, logOut, updateUserData }}
         >
             {!isLoading ? children : "Loading..."}
         </AuthContext.Provider>
